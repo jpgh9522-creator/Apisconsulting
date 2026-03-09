@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apis Consulting — Estrategia con la precisión de la colmena</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C96A;
+    --gold-dark: #7A6330;
+    --black: #0A0A08;
+    --gray-1: #111110;
+    --gray-2: #1A1A17;
+    --cream: #F2EDE4;
+    --cream-mid: #9A9485;
+    --gold-border: rgba(201, 168, 76, 0.2);
+    --gold-subtle: rgba(201, 168, 76, 0.04);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--cream);
+    font-family: 'DM Mono', 'Courier New', monospace;
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+
+  /* ── HEX PATTERN BACKGROUND ── */
+  .hex-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100'%3E%3Cpath d='M28 0 L56 16 L56 48 L28 64 L0 48 L0 16 Z' fill='none' stroke='%23C9A84C' stroke-width='0.5' opacity='0.07'/%3E%3Cpath d='M28 36 L56 52 L56 84 L28 100 L0 84 L0 52 Z' fill='none' stroke='%23C9A84C' stroke-width='0.5' opacity='0.07'/%3E%3C/svg%3E");
+    background-size: 56px 100px;
+  }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 32px; position: relative; z-index: 1; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(10,10,8,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--gold-border);
+    padding: 20px 0;
+  }
+  .nav-inner {
+    max-width: 1100px; margin: 0 auto; padding: 0 32px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo {
+    display: flex; flex-direction: column; gap: 1px;
+  }
+  .nav-logo-word {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 600;
+    font-size: 22px;
+    letter-spacing: 0.12em;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .nav-logo-sub {
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 0.35em;
+    color: var(--cream-mid);
+    text-transform: uppercase;
+    line-height: 1;
+  }
+  .nav-links {
+    display: flex; gap: 40px; list-style: none;
+  }
+  .nav-links a {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--cream-mid);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--gold); }
+
+  .btn-nav {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    background: transparent;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    padding: 10px 20px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+    display: inline-block;
+  }
+  .btn-nav:hover { background: var(--gold); color: var(--black); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex; align-items: center;
+    padding: 120px 0 80px;
+    position: relative;
+  }
+  .hero-content { max-width: 720px; }
+  .hero-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 28px;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .hero-label::before {
+    content: '';
+    display: block; width: 40px; height: 1px;
+    background: var(--gold);
+  }
+  .hero h1 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 300;
+    font-size: clamp(48px, 6vw, 80px);
+    line-height: 1.05;
+    color: var(--cream);
+    margin-bottom: 32px;
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--gold);
+  }
+  .hero-desc {
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--cream-mid);
+    margin-bottom: 48px;
+    max-width: 520px;
+  }
+  .hero-ctas {
+    display: flex; gap: 16px; flex-wrap: wrap;
+  }
+  .btn-primary {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    background: var(--gold);
+    color: var(--black);
+    padding: 16px 32px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    font-weight: 500;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .btn-primary:hover { background: var(--gold-light); transform: translateY(-1px); }
+  .btn-secondary {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    background: transparent;
+    color: var(--cream-mid);
+    padding: 16px 32px;
+    border: 1px solid var(--gold-border);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-secondary:hover { border-color: var(--gold); color: var(--cream); }
+
+  /* hex decoration */
+  .hero-hex {
+    position: absolute;
+    right: -80px; top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.06;
+    pointer-events: none;
+  }
+
+  /* ── SECTION COMMON ── */
+  section { padding: 100px 0; position: relative; z-index: 1; }
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .section-label::before {
+    content: '';
+    display: block; width: 32px; height: 1px;
+    background: var(--gold);
+  }
+  .section-title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 300;
+    font-size: clamp(34px, 4vw, 52px);
+    line-height: 1.1;
+    color: var(--cream);
+    margin-bottom: 20px;
+  }
+  .section-desc {
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--cream-mid);
+    max-width: 560px;
+    margin-bottom: 64px;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    height: 1px;
+    background: var(--gold-border);
+    width: 100%;
+    position: relative; z-index: 1;
+  }
+
+  /* ── VALORES ── */
+  .valores-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1px;
+    background: var(--gold-border);
+    border: 1px solid var(--gold-border);
+  }
+  .valor-item {
+    background: var(--gray-1);
+    padding: 40px 32px;
+    transition: background 0.2s;
+  }
+  .valor-item:hover { background: var(--gray-2); }
+  .valor-hex {
+    width: 36px; height: 36px;
+    margin-bottom: 20px;
+  }
+  .valor-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+  }
+  .valor-text {
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--cream-mid);
+  }
+
+  /* ── SERVICIOS ── */
+  #servicios { background: var(--gray-1); }
+  .servicios-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1px;
+    background: var(--gold-border);
+    border: 1px solid var(--gold-border);
+  }
+  .servicio-card {
+    background: var(--black);
+    padding: 48px 40px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.25s;
+    display: flex; flex-direction: column;
+  }
+  .servicio-card:hover { background: var(--gray-2); }
+  .servicio-card.featured { background: var(--gray-2); }
+  .servicio-card.featured::before {
+    content: 'MÁS POPULAR';
+    position: absolute; top: 20px; right: 20px;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--black);
+    background: var(--gold);
+    padding: 4px 10px;
+  }
+  .servicio-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--gold-dark);
+    margin-bottom: 24px;
+  }
+  .servicio-name {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--cream);
+    line-height: 1.2;
+    margin-bottom: 16px;
+  }
+  .servicio-price {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 38px;
+    font-weight: 300;
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .servicio-price-note {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--cream-mid);
+    margin-bottom: 32px;
+  }
+  .servicio-desc {
+    font-size: 12px;
+    line-height: 1.8;
+    color: var(--cream-mid);
+    margin-bottom: 32px;
+    flex: 1;
+  }
+  .servicio-features {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+  .servicio-features li {
+    font-size: 11px;
+    line-height: 1.6;
+    color: var(--cream-mid);
+    padding: 8px 0;
+    border-bottom: 1px solid var(--gold-border);
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+  .servicio-features li::before {
+    content: '◆';
+    color: var(--gold);
+    font-size: 7px;
+    margin-top: 3px;
+    flex-shrink: 0;
+  }
+
+  /* ── PROCESO ── */
+  .proceso-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0;
+    position: relative;
+  }
+  .proceso-step {
+    padding: 40px 32px 40px 0;
+    position: relative;
+  }
+  .proceso-step:not(:last-child)::after {
+    content: '→';
+    position: absolute;
+    right: -10px; top: 42px;
+    color: var(--gold);
+    font-size: 18px;
+    opacity: 0.5;
+  }
+  .proceso-num {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 52px;
+    font-weight: 300;
+    color: var(--gold-border);
+    line-height: 1;
+    margin-bottom: 16px;
+  }
+  .proceso-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+  }
+  .proceso-text {
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--cream-mid);
+  }
+
+  /* ── DIMENSIONES ── */
+  #dimensiones { background: var(--gray-1); }
+  .dimensiones-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1px;
+    background: var(--gold-border);
+    border: 1px solid var(--gold-border);
+  }
+  .dimension-item {
+    background: var(--black);
+    padding: 32px 24px;
+    text-align: center;
+    transition: background 0.2s;
+  }
+  .dimension-item:hover { background: var(--gray-2); }
+  .dimension-icon {
+    font-size: 24px;
+    margin-bottom: 16px;
+    display: block;
+  }
+  .dimension-name {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--cream);
+    margin-bottom: 8px;
+  }
+  .dimension-desc {
+    font-size: 11px;
+    line-height: 1.6;
+    color: var(--cream-mid);
+  }
+
+  /* ── CTA FINAL ── */
+  .cta-section {
+    background: var(--gray-2);
+    border-top: 1px solid var(--gold-border);
+    border-bottom: 1px solid var(--gold-border);
+    text-align: center;
+    padding: 100px 32px;
+  }
+  .cta-section .section-label { justify-content: center; }
+  .cta-section .section-label::before { display: none; }
+  .cta-tagline {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: clamp(28px, 4vw, 48px);
+    font-weight: 300;
+    font-style: italic;
+    color: var(--gold);
+    margin-bottom: 16px;
+  }
+  .cta-sub {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--cream-mid);
+    max-width: 500px;
+    margin: 0 auto 48px;
+  }
+  .cta-btns { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+  /* ── WAITLIST FORM ── */
+  #waitlist { padding: 80px 0; }
+  .waitlist-inner {
+    background: var(--gray-2);
+    border: 1px solid var(--gold-border);
+    padding: 56px 48px;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  .waitlist-inner .section-label { margin-bottom: 12px; }
+  .waitlist-inner h3 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 32px; font-weight: 400;
+    color: var(--cream); margin-bottom: 12px;
+  }
+  .waitlist-inner p {
+    font-size: 12px; line-height: 1.7;
+    color: var(--cream-mid); margin-bottom: 32px;
+  }
+  .form-row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .form-group {
+    display: flex; flex-direction: column; gap: 8px;
+    flex: 1; min-width: 200px;
+  }
+  .form-group label {
+    font-size: 9px; letter-spacing: 0.25em;
+    text-transform: uppercase; color: var(--gold);
+  }
+  .form-group input, .form-group select, .form-group textarea {
+    background: var(--black);
+    border: 1px solid var(--gold-border);
+    color: var(--cream);
+    padding: 14px 16px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+  }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus { border-color: var(--gold); }
+  .form-group textarea { resize: vertical; min-height: 80px; }
+  .form-group select option { background: var(--gray-2); }
+  .form-submit-row { margin-top: 20px; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--gray-1);
+    border-top: 1px solid var(--gold-border);
+    padding: 48px 0 32px;
+  }
+  .footer-inner {
+    max-width: 1100px; margin: 0 auto; padding: 0 32px;
+    display: flex; justify-content: space-between;
+    align-items: flex-start; flex-wrap: wrap; gap: 32px;
+  }
+  .footer-brand { max-width: 280px; }
+  .footer-logo-word {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 24px; font-weight: 600;
+    letter-spacing: 0.12em; color: var(--gold);
+  }
+  .footer-logo-sub {
+    font-size: 8px; letter-spacing: 0.3em;
+    text-transform: uppercase; color: var(--cream-mid);
+    display: block; margin-bottom: 16px;
+  }
+  .footer-tagline {
+    font-size: 11px; line-height: 1.7;
+    font-style: italic; color: var(--cream-mid);
+  }
+  .footer-links h4 {
+    font-size: 9px; letter-spacing: 0.25em;
+    text-transform: uppercase; color: var(--gold);
+    margin-bottom: 16px;
+  }
+  .footer-links ul { list-style: none; }
+  .footer-links li { margin-bottom: 10px; }
+  .footer-links a {
+    font-size: 12px; color: var(--cream-mid);
+    text-decoration: none; transition: color 0.2s;
+  }
+  .footer-links a:hover { color: var(--gold); }
+  .footer-bottom {
+    max-width: 1100px; margin: 32px auto 0; padding: 24px 32px 0;
+    border-top: 1px solid var(--gold-border);
+    display: flex; justify-content: space-between;
+    align-items: center; flex-wrap: wrap; gap: 12px;
+  }
+  .footer-copy { font-size: 11px; color: var(--cream-mid); }
+  .footer-note { font-size: 10px; color: var(--gold-dark); letter-spacing: 0.1em; }
+
+  /* ── WHATSAPP FLOAT ── */
+  .whatsapp-float {
+    position: fixed;
+    bottom: 32px; right: 32px;
+    z-index: 200;
+    width: 56px; height: 56px;
+    background: #25D366;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 20px rgba(37,211,102,0.35);
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .whatsapp-float:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(37,211,102,0.45);
+  }
+  .whatsapp-float svg { width: 28px; height: 28px; fill: white; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .hero-label  { animation: fadeUp 0.6s ease both; }
+  .hero h1     { animation: fadeUp 0.6s 0.1s ease both; }
+  .hero-desc   { animation: fadeUp 0.6s 0.2s ease both; }
+  .hero-ctas   { animation: fadeUp 0.6s 0.3s ease both; }
+
+  /* ── SCROLL REVEAL ── */
+  .reveal {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.hidden {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+
+  /* ── FAQ ── */
+  #faq { background: var(--black); }
+  .faq-list { max-width: 760px; }
+  .faq-item {
+    border-bottom: 1px solid var(--gold-border);
+  }
+  .faq-question {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: var(--cream);
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 20px;
+    font-weight: 400;
+    text-align: left;
+    padding: 28px 0;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    transition: color 0.2s;
+    line-height: 1.3;
+  }
+  .faq-question:hover { color: var(--gold); }
+  .faq-icon {
+    width: 28px; height: 28px;
+    border: 1px solid var(--gold-border);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: border-color 0.2s, background 0.2s, transform 0.3s;
+    position: relative;
+  }
+  .faq-icon::before,
+  .faq-icon::after {
+    content: '';
+    position: absolute;
+    background: var(--gold);
+    transition: transform 0.3s, opacity 0.3s;
+  }
+  .faq-icon::before { width: 12px; height: 1px; }
+  .faq-icon::after  { width: 1px; height: 12px; }
+  .faq-item.open .faq-icon::after { transform: rotate(90deg); opacity: 0; }
+  .faq-item.open .faq-icon { border-color: var(--gold); background: rgba(201,168,76,0.08); }
+  .faq-item.open .faq-question { color: var(--gold); }
+  .faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, padding 0.3s ease;
+  }
+  .faq-answer-inner {
+    font-size: 13px;
+    line-height: 1.85;
+    color: var(--cream-mid);
+    padding-bottom: 28px;
+    max-width: 640px;
+  }
+  .faq-item.open .faq-answer { max-height: 400px; }
+
+  /* ── POR QUÉ ELEGIRNOS ── */
+  #porque { background: var(--gray-1); }
+  .porque-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--gold-border);
+    border: 1px solid var(--gold-border);
+    margin-bottom: 48px;
+  }
+  @media (max-width: 640px) { .porque-grid { grid-template-columns: 1fr; } }
+  .porque-stat {
+    background: var(--black);
+    padding: 48px 40px;
+    transition: background 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .porque-stat:hover { background: var(--gray-2); }
+  .porque-stat::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: var(--gold);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .porque-stat:hover::before { opacity: 1; }
+  .porque-num {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: clamp(52px, 6vw, 72px);
+    font-weight: 300;
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .porque-num span {
+    font-size: 0.45em;
+    vertical-align: super;
+    color: var(--gold-dark);
+  }
+  .porque-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+  }
+  .porque-desc {
+    font-size: 12px;
+    line-height: 1.75;
+    color: var(--cream-mid);
+    max-width: 320px;
+  }
+  .porque-disclaimer {
+    font-size: 10px;
+    color: var(--gold-dark);
+    letter-spacing: 0.08em;
+    border-top: 1px solid var(--gold-border);
+    padding-top: 20px;
+    max-width: 640px;
+  }
+  .porque-props {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+  .porque-prop {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .porque-prop-icon {
+    width: 32px; height: 32px;
+    border: 1px solid var(--gold-border);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .porque-prop-text strong {
+    display: block;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--cream);
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+  .porque-prop-text p {
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--cream-mid);
+  }
+
+  /* ── MOBILE ── */
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+    .proceso-step:not(:last-child)::after { display: none; }
+    .proceso-steps { gap: 32px; }
+    .waitlist-inner { padding: 40px 24px; }
+    .footer-inner { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hex-bg"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">
+      <span class="nav-logo-word">APIS</span>
+      <span class="nav-logo-sub">C O N S U L T I N G</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#nosotros">Nosotros</a></li>
+      <li><a href="#servicios">Servicios</a></li>
+      <li><a href="#proceso">Proceso</a></li>
+      <li><a href="#porque">Por qué nosotros</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><a href="#waitlist">Contacto</a></li>
+    </ul>
+    <a href="#waitlist" class="btn-nav">Comenzar</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-label">Consultoría Estratégica · LATAM</div>
+      <h1>Estrategia de<br><em>negocio<br>que funciona.</em></h1>
+      <p class="hero-desc">
+        Diagnósticos de nivel enterprise, accesibles para tu negocio. Análisis profundo, datos reales y recomendaciones ejecutables — entregados con agilidad para startups y PyMEs.
+      </p>
+      <div class="hero-ctas">
+        <a href="#servicios" class="btn-primary">Ver servicios</a>
+        <a href="#proceso" class="btn-secondary">Cómo funciona</a>
+      </div>
+    </div>
+    <!-- hex SVG deco -->
+    <svg class="hero-hex" width="520" height="600" viewBox="0 0 520 600" fill="none">
+      <path d="M260 10 L510 145 L510 415 L260 550 L10 415 L10 145 Z" stroke="#C9A84C" stroke-width="1.5"/>
+      <path d="M260 60 L460 170 L460 390 L260 500 L60 390 L60 170 Z" stroke="#C9A84C" stroke-width="1"/>
+      <path d="M260 110 L410 195 L410 365 L260 450 L110 365 L110 195 Z" stroke="#C9A84C" stroke-width="0.5"/>
+    </svg>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- NOSOTROS / VALORES -->
+<section id="nosotros">
+  <div class="container">
+    <div class="section-label">Filosofía</div>
+    <h2 class="section-title">Cada decisión estratégica<br>tiene un propósito.</h2>
+    <p class="section-desc">
+      Apis es el nombre científico de las abejas — seres que encarnan la estrategia en su forma más pura. Cada movimiento es intencional, cada rol tiene un propósito, y el resultado es un sistema que perdura.
+    </p>
+    <div class="valores-grid reveal">
+      <div class="valor-item">
+        <svg class="valor-hex" viewBox="0 0 36 36" fill="none">
+          <path d="M18 2 L33 9.5 L33 26.5 L18 34 L3 26.5 L3 9.5 Z" stroke="#C9A84C" stroke-width="1.5"/>
+        </svg>
+        <div class="valor-title">Precisión</div>
+        <div class="valor-text">Cada diagnóstico se construye con rigor metodológico y atención total al detalle.</div>
+      </div>
+      <div class="valor-item">
+        <svg class="valor-hex" viewBox="0 0 36 36" fill="none">
+          <path d="M18 2 L33 9.5 L33 26.5 L18 34 L3 26.5 L3 9.5 Z" stroke="#C9A84C" stroke-width="1.5"/>
+        </svg>
+        <div class="valor-title">Claridad</div>
+        <div class="valor-text">Traducimos la complejidad estratégica en acciones comprensibles y ejecutables.</div>
+      </div>
+      <div class="valor-item">
+        <svg class="valor-hex" viewBox="0 0 36 36" fill="none">
+          <path d="M18 2 L33 9.5 L33 26.5 L18 34 L3 26.5 L3 9.5 Z" stroke="#C9A84C" stroke-width="1.5"/>
+        </svg>
+        <div class="valor-title">Impacto</div>
+        <div class="valor-text">Medimos nuestro éxito únicamente por los resultados tangibles de nuestros clientes.</div>
+      </div>
+      <div class="valor-item">
+        <svg class="valor-hex" viewBox="0 0 36 36" fill="none">
+          <path d="M18 2 L33 9.5 L33 26.5 L18 34 L3 26.5 L3 9.5 Z" stroke="#C9A84C" stroke-width="1.5"/>
+        </svg>
+        <div class="valor-title">Confianza</div>
+        <div class="valor-text">Operamos con integridad total en cada interacción y entregable.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SERVICIOS -->
+<section id="servicios">
+  <div class="container">
+    <div class="section-label">Servicios</div>
+    <h2 class="section-title">Diagnósticos estratégicos<br>para cada etapa.</h2>
+    <p class="section-desc">
+      Elige el nivel de profundidad que tu negocio necesita. Todos los servicios incluyen análisis de las 5 dimensiones clave de tu empresa y un reporte profesional en PDF.
+    </p>
+    <div class="servicios-grid">
+
+      <!-- SERVICIO 1 -->
+      <div class="servicio-card reveal reveal-delay-1">
+        <div class="servicio-num">01 — DIAGNÓSTICO</div>
+        <div class="servicio-name">Diagnóstico<br>Esencial</div>
+        <div class="servicio-price">$1,000</div>
+        <div class="servicio-price-note">MXN + IVA · Pago único</div>
+        <div class="servicio-desc">
+          Tu primer paso para entender en dónde está tu negocio hoy. Identifica áreas de oportunidad con base en datos reales, no suposiciones.
+        </div>
+        <ul class="servicio-features">
+          <li>Análisis de las 5 dimensiones de tu negocio</li>
+          <li>Identificación de áreas de oportunidad</li>
+          <li>Análisis de competencia</li>
+          <li>Reporte profesional en PDF</li>
+        </ul>
+        <a href="https://wa.me/525525188530?text=Hola%2C%20quiero%20comenzar%20mi%20Diagn%C3%B3stico%20Esencial%20%281%2C000%20MXN%29." class="btn-primary" target="_blank">Solicitar diagnóstico</a>
+      </div>
+
+      <!-- SERVICIO 2 -->
+      <div class="servicio-card featured reveal reveal-delay-2">
+        <div class="servicio-num">02 — DIAGNÓSTICO+</div>
+        <div class="servicio-name">Diagnóstico<br>+ Recomendaciones</div>
+        <div class="servicio-price">$2,500</div>
+        <div class="servicio-price-note">MXN + IVA · Pago único</div>
+        <div class="servicio-desc">
+          No solo sabrás qué está fallando — sabrás exactamente cómo corregirlo. Recomendaciones priorizadas y ejecutables para cada área identificada.
+        </div>
+        <ul class="servicio-features">
+          <li>Todo lo incluido en el Diagnóstico Esencial</li>
+          <li>Recomendaciones estratégicas por área</li>
+          <li>Priorización de acciones de alto impacto</li>
+          <li>Hoja de ruta sugerida</li>
+          <li>Reporte ejecutivo en PDF</li>
+        </ul>
+        <a href="https://wa.me/525525188530?text=Hola%2C%20me%20interesa%20el%20Diagn%C3%B3stico%20%2B%20Recomendaciones%20%282%2C500%20MXN%29." class="btn-primary" target="_blank">Solicitar ahora</a>
+      </div>
+
+      <!-- SERVICIO 3 -->
+      <div class="servicio-card reveal reveal-delay-3">
+        <div class="servicio-num">03 — ASESORÍA</div>
+        <div class="servicio-name">Diagnóstico<br>+ Asesoría</div>
+        <div class="servicio-price">$5,000</div>
+        <div class="servicio-price-note">MXN + IVA · Pago único</div>
+        <div class="servicio-desc">
+          El nivel más completo. Además del diagnóstico y las recomendaciones, tendrás un asesor estratégico asignado que te acompañará en el proceso.
+        </div>
+        <ul class="servicio-features">
+          <li>Todo lo incluido en Diagnóstico + Recomendaciones</li>
+          <li>Asesor estratégico dedicado</li>
+          <li>Sesiones de seguimiento personalizadas</li>
+          <li>Soporte directo para implementación</li>
+          <li>Reporte ejecutivo completo en PDF</li>
+        </ul>
+        <a href="https://wa.me/525525188530?text=Hola%2C%20me%20interesa%20la%20Asesor%C3%ADa%20Personalizada%20%285%2C000%20MXN%29." class="btn-primary" target="_blank">Agendar asesoría</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PROCESO -->
+<section id="proceso">
+  <div class="container">
+    <div class="section-label">Metodología</div>
+    <h2 class="section-title">Así funciona<br>Apis Consulting.</h2>
+    <p class="section-desc">
+      Un proceso ágil, estructurado y completamente digital. Del formulario al reporte, sin reuniones innecesarias ni tiempos de espera prolongados.
+    </p>
+    <div class="proceso-steps reveal">
+      <div class="proceso-step">
+        <div class="proceso-num">01</div>
+        <div class="proceso-title">Formulario</div>
+        <div class="proceso-text">Completas un formulario estructurado con información de tu negocio en las 5 dimensiones clave.</div>
+      </div>
+      <div class="proceso-step">
+        <div class="proceso-num">02</div>
+        <div class="proceso-title">Análisis</div>
+        <div class="proceso-text">Nuestro equipo analiza tus respuestas con metodología propia, comparando con benchmarks del sector.</div>
+      </div>
+      <div class="proceso-step">
+        <div class="proceso-num">03</div>
+        <div class="proceso-title">Diagnóstico</div>
+        <div class="proceso-text">Generamos un diagnóstico detallado con áreas de oportunidad y análisis competitivo de tu industria.</div>
+      </div>
+      <div class="proceso-step">
+        <div class="proceso-num">04</div>
+        <div class="proceso-title">Entrega</div>
+        <div class="proceso-text">Recibes tu reporte ejecutivo en PDF, listo para compartir con tu equipo e implementar.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- DIMENSIONES -->
+<section id="dimensiones">
+  <div class="container">
+    <div class="section-label">Metodología · 5 Dimensiones</div>
+    <h2 class="section-title">Una visión completa<br>de tu negocio.</h2>
+    <p class="section-desc">
+      El diagnóstico evalúa tu empresa desde cinco ángulos estratégicos. Porque los problemas rara vez tienen una sola causa.
+    </p>
+    <div class="dimensiones-grid reveal">
+      <div class="dimension-item">
+        <span class="dimension-icon">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <path d="M16 2 L28 8.5 L28 23.5 L16 30 L4 23.5 L4 8.5 Z" stroke="#C9A84C" stroke-width="1.2"/>
+            <circle cx="16" cy="16" r="4" stroke="#C9A84C" stroke-width="1.2"/>
+          </svg>
+        </span>
+        <div class="dimension-name">Propósito<br>e Identidad</div>
+        <div class="dimension-desc">¿Por qué existe tu empresa? ¿Qué la hace única?</div>
+      </div>
+      <div class="dimension-item">
+        <span class="dimension-icon">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <path d="M16 2 L28 8.5 L28 23.5 L16 30 L4 23.5 L4 8.5 Z" stroke="#C9A84C" stroke-width="1.2"/>
+            <path d="M10 16 L14 20 L22 12" stroke="#C9A84C" stroke-width="1.2"/>
+          </svg>
+        </span>
+        <div class="dimension-name">Propuesta<br>de Valor</div>
+        <div class="dimension-desc">¿Qué problema resuelves y para quién lo resuelves?</div>
+      </div>
+      <div class="dimension-item">
+        <span class="dimension-icon">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <path d="M16 2 L28 8.5 L28 23.5 L16 30 L4 23.5 L4 8.5 Z" stroke="#C9A84C" stroke-width="1.2"/>
+            <circle cx="16" cy="16" r="6" stroke="#C9A84C" stroke-width="1.2"/>
+            <circle cx="16" cy="16" r="2" fill="#C9A84C"/>
+          </svg>
+        </span>
+        <div class="dimension-name">Mercado</div>
+        <div class="dimension-desc">Tamaño, competencia, posicionamiento y tendencias.</div>
+      </div>
+      <div class="dimension-item">
+        <span class="dimension-icon">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <path d="M16 2 L28 8.5 L28 23.5 L16 30 L4 23.5 L4 8.5 Z" stroke="#C9A84C" stroke-width="1.2"/>
+            <rect x="11" y="11" width="10" height="10" stroke="#C9A84C" stroke-width="1.2"/>
+          </svg>
+        </span>
+        <div class="dimension-name">Productos<br>y Servicios</div>
+        <div class="dimension-desc">Portafolio, diferenciadores y modelo de entrega.</div>
+      </div>
+      <div class="dimension-item">
+        <span class="dimension-icon">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <path d="M16 2 L28 8.5 L28 23.5 L16 30 L4 23.5 L4 8.5 Z" stroke="#C9A84C" stroke-width="1.2"/>
+            <circle cx="16" cy="13" r="3" stroke="#C9A84C" stroke-width="1.2"/>
+            <path d="M10 22 Q16 18 22 22" stroke="#C9A84C" stroke-width="1.2"/>
+          </svg>
+        </span>
+        <div class="dimension-name">Equipo</div>
+        <div class="dimension-desc">Capacidades, estructura y cultura organizacional.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- POR QUÉ ELEGIRNOS -->
+<section id="porque">
+  <div class="container">
+    <div class="section-label reveal">Diferenciadores</div>
+    <h2 class="section-title reveal">¿Por qué Apis Consulting?</h2>
+    <p class="section-desc reveal">Diagnósticos de nivel enterprise sin los costos ni los tiempos de una consultoría tradicional. Datos reales, entregables concretos, resultados medibles.</p>
+
+    <div class="porque-grid reveal">
+      <div class="porque-stat">
+        <div class="porque-num">90<span>%</span></div>
+        <div class="porque-label">Ahorro vs. consultoría tradicional</div>
+        <div class="porque-desc">Un diagnóstico estratégico con una firma tradicional puede costar entre $50,000 y $200,000 MXN. Apis lo entrega desde $0 — con el mismo rigor metodológico.</div>
+      </div>
+      <div class="porque-stat">
+        <div class="porque-num">98<span>%</span></div>
+        <div class="porque-label">Satisfacción de clientes</div>
+        <div class="porque-desc">Nuestros clientes califican el reporte como "accionable" y "claro" en más del 98% de los casos. No entregamos análisis abstractos — entregamos decisiones.</div>
+      </div>
+    </div>
+
+    <div class="porque-props reveal">
+      <div class="porque-prop">
+        <div class="porque-prop-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M8 1 L14 4.5 L14 11.5 L8 15 L2 11.5 L2 4.5 Z" stroke="#C9A84C" stroke-width="1.2"/>
+          </svg>
+        </div>
+        <div class="porque-prop-text">
+          <strong>100% Digital</strong>
+          <p>Sin reuniones, sin traslados. Proceso completamente en línea desde cualquier lugar de LATAM.</p>
+        </div>
+      </div>
+      <div class="porque-prop">
+        <div class="porque-prop-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M8 1 L14 4.5 L14 11.5 L8 15 L2 11.5 L2 4.5 Z" stroke="#C9A84C" stroke-width="1.2"/>
+          </svg>
+        </div>
+        <div class="porque-prop-text">
+          <strong>Entrega en 48 hrs</strong>
+          <p>Tu diagnóstico listo en menos de dos días hábiles. Sin esperas de semanas ni procesos burocráticos.</p>
+        </div>
+      </div>
+      <div class="porque-prop">
+        <div class="porque-prop-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M8 1 L14 4.5 L14 11.5 L8 15 L2 11.5 L2 4.5 Z" stroke="#C9A84C" stroke-width="1.2"/>
+          </svg>
+        </div>
+        <div class="porque-prop-text">
+          <strong>5 Dimensiones</strong>
+          <p>Análisis integral de tu negocio. No solo un área: propósito, mercado, propuesta de valor, productos y equipo.</p>
+        </div>
+      </div>
+      <div class="porque-prop">
+        <div class="porque-prop-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M8 1 L14 4.5 L14 11.5 L8 15 L2 11.5 L2 4.5 Z" stroke="#C9A84C" stroke-width="1.2"/>
+          </svg>
+        </div>
+        <div class="porque-prop-text">
+          <strong>Reporte Ejecutivo</strong>
+          <p>Entregable profesional en PDF, listo para presentar a socios, inversionistas o tu equipo directivo.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="porque-disclaimer reveal">
+      * Los porcentajes presentados son estimaciones basadas en comparativas de mercado y son de carácter aspiracional. Los resultados pueden variar según el sector y etapa de cada empresa.
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="container">
+    <div class="section-label reveal">Preguntas Frecuentes</div>
+    <h2 class="section-title reveal">Todo lo que necesitas<br>saber antes de empezar.</h2>
+    <div class="faq-list reveal">
+
+      <div class="faq-item">
+        <button class="faq-question">
+          ¿Cómo funciona el diagnóstico gratuito?
+          <span class="faq-icon"></span>
+        </button>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            Llenas un formulario estructurado con información de tu negocio en 5 dimensiones clave: propósito e identidad, propuesta de valor, mercado, productos/servicios y equipo. Nuestro equipo analiza tus respuestas y te entrega un reporte profesional en PDF con áreas de oportunidad y un análisis de tu competencia. Precio: $1,000 MXN + IVA.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          ¿Cuánto tiempo tarda en entregarse el diagnóstico?
+          <span class="faq-icon"></span>
+        </button>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            El proceso es completamente digital y ágil. Una vez que completas el formulario, recibirás tu reporte en un plazo de 24 a 48 horas hábiles. El servicio de Asesoría Personalizada tiene un tiempo de respuesta acordado directamente con tu asesor asignado.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          ¿Para qué tipo de empresas está diseñado Apis Consulting?
+          <span class="faq-icon"></span>
+        </button>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            Trabajamos con startups en etapa temprana y PyMEs en crecimiento a lo largo de Latinoamérica. Si tienes un negocio en operación —o una idea que ya está generando tracción— nuestros diagnósticos están diseñados para ti. No necesitas ser una empresa grande para tomar decisiones estratégicas con datos.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          ¿Cuál es la diferencia entre el Diagnóstico y el Diagnóstico + Recomendaciones?
+          <span class="faq-icon"></span>
+        </button>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            El Diagnóstico Esencial (gratuito) te muestra <em>dónde está</em> tu negocio: identifica áreas de oportunidad y mapea tu competencia. El Diagnóstico + Recomendaciones va un paso más allá: te dice <em>qué hacer</em> — con acciones priorizadas, una hoja de ruta sugerida y recomendaciones ejecutables para cada área detectada.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          ¿Los precios incluyen IVA?
+          <span class="faq-icon"></span>
+        </button>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            Los precios publicados ($1,000 MXN, $2,500 MXN y $5,000 MXN) no incluyen IVA. El monto final con impuesto será informado antes de confirmar tu compra.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          ¿Cómo es el proceso de pago?
+          <span class="faq-icon"></span>
+        </button>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            Actualmente el proceso de pago y coordinación se realiza directamente a través de WhatsApp con nuestro equipo. Te enviaremos instrucciones claras y confirmaremos tu servicio una vez recibido el pago. El proceso es rápido, seguro y sin complicaciones.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CTA CENTRAL -->
+<div class="cta-section">
+  <div class="section-label">Empieza hoy</div>
+  <div class="cta-tagline">"Deja de operar a ciegas."</div>
+  <p class="cta-sub">Toma decisiones estratégicas con datos, no con intuición. Elige el nivel de análisis que tu negocio necesita hoy.</p>
+  <div class="cta-btns">
+    <a href="https://wa.me/525525188530?text=Hola%2C%20quiero%20comenzar%20mi%20diagn%C3%B3stico%20con%20Apis%20Consulting." class="btn-primary" target="_blank">Empieza tu diagnóstico ahora</a>
+    <a href="#servicios" class="btn-secondary">Ver todos los servicios</a>
+  </div>
+</div>
+
+<!-- WAITLIST / CONTACTO -->
+<section id="waitlist">
+  <div class="container">
+    <div class="waitlist-inner">
+      <div class="section-label">Contacto</div>
+      <h3>¿Tienes preguntas?</h3>
+      <p>Escríbenos y un consultor te responderá en menos de 24 horas. También puedes contactarnos directo por WhatsApp para una respuesta inmediata.</p>
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nombre</label>
+            <input type="text" placeholder="Tu nombre">
+          </div>
+          <div class="form-group">
+            <label>Empresa</label>
+            <input type="text" placeholder="Nombre de tu empresa">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" placeholder="hola@tuempresa.com">
+          </div>
+          <div class="form-group">
+            <label>Servicio de interés</label>
+            <select>
+              <option value="">Selecciona un servicio</option>
+              <option>Diagnóstico Esencial (Gratis)</option>
+              <option>Diagnóstico + Recomendaciones ($2,500 MXN)</option>
+              <option>Diagnóstico + Asesoría ($5,000 MXN)</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Mensaje (opcional)</label>
+          <textarea placeholder="Cuéntanos brevemente sobre tu negocio o dudas..."></textarea>
+        </div>
+        <div class="form-submit-row">
+          <a href="https://wa.me/525525188530?text=Hola%2C%20quiero%20m%C3%A1s%20informaci%C3%B3n%20sobre%20Apis%20Consulting." class="btn-primary" target="_blank" style="display:inline-block;">Enviar por WhatsApp</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo-word">APIS</div>
+      <span class="footer-logo-sub">C O N S U L T I N G</span>
+      <div class="footer-tagline">"Estrategia con la precisión de la colmena."</div>
+    </div>
+    <div class="footer-links">
+      <h4>Navegación</h4>
+      <ul>
+        <li><a href="#nosotros">Nosotros</a></li>
+        <li><a href="#servicios">Servicios</a></li>
+        <li><a href="#proceso">Proceso</a></li>
+        <li><a href="#dimensiones">Metodología</a></li>
+        <li><a href="#waitlist">Contacto</a></li>
+      </ul>
+    </div>
+    <div class="footer-links">
+      <h4>Servicios</h4>
+      <ul>
+        <li><a href="#servicios">Diagnóstico Esencial</a></li>
+        <li><a href="#servicios">Diagnóstico + Recomendaciones</a></li>
+        <li><a href="#servicios">Diagnóstico + Asesoría</a></li>
+      </ul>
+    </div>
+    <div class="footer-links">
+      <h4>Contacto</h4>
+      <ul>
+        <li><a href="/cdn-cgi/l/email-protection#5e3631323f1e3f2e372d3d31302d2b322a373039703d3133"><span class="__cf_email__" data-cfemail="aec6c1c2cfeecfdec7ddcdc1c0dddbc2dac7c0c980cdc1c3">[email&#160;protected]</span></a></li>
+        <li><a href="https://wa.me/525525188530" target="_blank">WhatsApp</a></li>
+        <li><a href="#">apisconsulting.com</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2025 Apis Consulting. Todos los derechos reservados.</span>
+    <span class="footer-note">Los precios no incluyen IVA · Versión 1.0</span>
+  </div>
+</footer>
+
+<!-- WHATSAPP FLOAT -->
+<a class="whatsapp-float" href="https://wa.me/525525188530?text=Hola%2C%20me%20interesa%20conocer%20m%C3%A1s%20sobre%20Apis%20Consulting." target="_blank" title="Chatea con nosotros">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+</a>
+
+<script>
+  // ── SCROLL REVEAL ──
+  // Mark hidden via JS only (so content shows if JS fails)
+  document.querySelectorAll('.reveal').forEach(el => el.classList.add('hidden'));
+
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.remove('hidden');
+        entry.target.classList.add('visible');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -20px 0px' });
+
+  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+  // ── FAQ ACCORDION ──
+  document.querySelectorAll('.faq-question').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.closest('.faq-item');
+      const isOpen = item.classList.conta
